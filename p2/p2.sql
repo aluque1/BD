@@ -114,7 +114,7 @@ commit;
 SELECT ISBN, titulo, anio as año, precioVenta as precio_venta
 FROM Libro;
 
--- Consulta 2 que muestra libros pedidos y el id y nombre del usuarioç
+-- Consulta 2 que muestra libros pedidos y el id y nombre del usuario
 SELECT idPedido as id_pedido, fechaPedido as fecha_pedido, c.IdCliente as id_cliente, nombre as nombre_cliente 
 FROM Pedido p JOIN Cliente c ON p.IdCliente = c.IdCliente;
 
