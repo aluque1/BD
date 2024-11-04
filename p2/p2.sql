@@ -57,8 +57,6 @@ insert into Cliente values ('0000006','Betty Fraser', 'Whitehall 32', '244488989
 insert into Cliente values ('0000007','Jack the Ripper', 'Tottenham Court Road 3', '2444889890123456' );
 insert into Cliente values ('0000008','John H. Watson', 'Tottenham Court Road 3', '2444889890123456' );
 
-
-
 insert into Pedido values ('0000001P','0000001', TO_DATE('01/10/2020'),TO_DATE('03/10/2020'));
 insert into Pedido values ('0000002P','0000001', TO_DATE('01/10/2020'),null);
 insert into Pedido values ('0000003P','0000002', TO_DATE('02/10/2020'),TO_DATE('03/10/2020'));
@@ -145,4 +143,43 @@ FROM Cliente c
 WHERE NOT EXISTS (SELECT idPedido FROM Pedido p WHERE p.IdCliente = c.IdCliente);
 
 -- Consulta 7 que muestra los clientes que SOLO han comprado libros que cuestan menos de 20 euros.
-SELECT
+SELECT c.IdCliente as id_cliente, c.nombre as nombre_cliente
+FROM Cliente c JOIN Pedido p ON c.IdCliente = p.IdCliente
+JOIN Libros_Pedido lp ON p.IdPedido = lp.idPedido
+JOIN Libro l ON lp.ISBN = l.ISBN
+GROUP BY c.IdCliente, c.nombre
+HAVING MAX(l.precioVenta) < 20;
+
+-- Consulta 8 que muestra los libros que cuestan más de 30 euros o de los que se han vendido más de 5 ejemplares en el mismo pedido.
+SELECT l.ISBN, l.titulo, l.precioVenta as precio_venta
+FROM Libro l JOIN Libros_Pedido lp ON l.ISBN = lp.ISBN
+WHERE l.precioVenta > 30 OR lp.cantidad > 5
+GROUP BY l.ISBN, l.titulo, l.precioVenta;
+
+-- Consulta 9 que muesta los clientes que han hecho más de un pedido en una misma fecha
+SELECT c.IdCliente as id_cliente, c.nombre as nombre_cliente, p.fechaPedido as fecha_pedido
+FROM Cliente c JOIN Pedido p ON c.IdCliente = p.IdCliente
+GROUP BY c.IDCliente, c.nombre, p.fechaPedido
+HAVING COUNT(c.IdCliente) > 1;
+
+-- Consulta 10 que muestra los clientes que han comprado los libros 'Dracula' o '1984'
+SELECT c.IdCliente as id_cliente, c.nombre as nombre_cliente
+FROM Cliente c JOIN Pedido p ON c.IdCliente = p.IDCLIENTE
+JOIN Libros_Pedido lp ON p.IdPedido = lp.IdPedido
+JOIN Libro l ON lp.ISBN = l.ISBN
+WHERE l.titulo IN ('Dracula', '1984');
+
+-- Consulta 11 que muestra  los clientes que han comprado los libros 'Pride and Prejudice' y 'The Little Prince'.
+SELECT c.IdCliente as id_cliente, c.nombre as nombre_cliente
+FROM Cliente c JOIN Pedido p ON c.IdCliente = p.IdCliente
+JOIN Libros_Pedido lp ON p.IdPedido = lp.IdPedido
+JOIN Libro l ON lp.ISBN = l.ISBN
+WHERE l.titulo IN ('Pride and Prejudice', 'The Little Prince')
+GROUP BY c.IdCliente, c.nombre
+HAVING COUNT(DISTINCT l.titulo) = 2;
+
+/* Consulta 12 que muestra los clientes y los libros para los que se ha obtenido una
+rentabilidad de al menos 50 euros en un único pedido. La
+rentabilidad es la diferencia entre el precio de venta y
+el precio de compra. Debes tener en cuenta el número de ejemplares
+vendidos. */ 
