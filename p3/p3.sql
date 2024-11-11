@@ -175,7 +175,7 @@ han escrito articulos en ellos en 2019. Si ningún periodista ha
 escrito ningún articulo para un periodico en 2019, debe mostrar
 '(ninguno)' en lugar del nombre del periodista.  Esquema:
 (Id_Periodico, Nombre_Periodico, Id_Periodista, Nombre_Periodista) */
-
+NVL("(ninguno)", 0)
 
 
 /* 7. Muestra la lista de TODOS los periodistas, el número de
@@ -183,7 +183,9 @@ articulos escritos por cada periodista, y el número de periodicos
 donde se han publicado esos articulos.  Si un periodista no ha escrito
 ningún articulo, debe mostrar 0 en esas columnas.  Esquema:
 (Id_Periodista, Nombre_Periodista, Num_Articulos, Num_Periodicos) */
-
+SELECT j.idPeriodista as Id_Periodista, j.nombre as Nombre_Periodista, COUNT(idArticulo) as Num_Articulos, COUNT(DISTINCT idPeriodico) as Num_periodicos
+FROM periodistas j JOIN articulo a on j.idPeriodista = a.ifPeriodista
+  
 
 
 /* 8. Contesta la pregunta anterior (7) utilizando operaciones de
