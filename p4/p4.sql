@@ -168,18 +168,22 @@ WHERE p.idPeriodista NOT IN (
 2018 solo escribieron artículos en inglés.
 Esquema: (Id_articulo, Titular, Fecha_publicacion, Nombre_Periodista)
 */
-SELECT distinct a.idArticulo Id_Articulo, a.titular Titular, a.fechaPub Fecha_publicacion, p.nombre nombre
+SELECT a.idArticulo Id_Articulo, a.titular Titular, a.fechaPub Fecha_publicacion, p.nombre nombre
 FROM articulo a 
 JOIN periodista p ON a.idPeriodista = p.idPeriodista
 WHERE p.idPeriodista IN (
 	SELECT a2.idPeriodista
 	FROM articulo a2
 	JOIN periodico per on a2.idPeriodico = per.idPeriodico
-	WHERE EXTRACT(YEAR FROM a2.fechaPub) = 2018 AND per.idioma = 'en'
-); /* ESTÁ MAL  */
+	WHERE EXTRACT(YEAR FROM a2.fechaPub) = 2018
+	GROUP BY a2.idPeriodista
+	HAVING COUNT(DISTINCT per.idioma) = 1 AND MAX(per.idioma) = 'en'
+);
   
 /* 6. Muestra los artículos más visitados en cada periódico.
 Esquema: (Periodico_Id, Articulo_Id, Titular, Num_visitas) */
+SELECT per.idPeriodico Periodico_Id, a.idArticulo Articulo_Id, a.titular Titula, a.numVisitas NumVisitas
+FROM articulo a
 
 
 

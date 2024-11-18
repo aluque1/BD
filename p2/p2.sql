@@ -183,3 +183,4 @@ rentabilidad de al menos 50 euros en un único pedido. La
 rentabilidad es la diferencia entre el precio de venta y
 el precio de compra. Debes tener en cuenta el número de ejemplares
 vendidos. */ 
+SELECT c.nombre Nombre_cliente, l.titulo Titulo

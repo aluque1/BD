@@ -123,7 +123,7 @@ COMMIT;
 SELECT COUNT (*) as num_periodicos 
 FROM Periodico;
 
-/* 2. Muestra el número de  periodicos en cada idioma
+/* 2. Muestra el número de periodicos en cada idioma
 Esquema: (Idioma, Num_periodicos) */
 SELECT p.Idioma, COUNT (DISTINCT p.Idioma) as num_periodicos 
 FROM Periodico p
@@ -162,11 +162,11 @@ periodicos para los que cada periodista ha escrito articulos. Si un
 periodista no ha escrito ningún articulo para ningún periodico, debe
 mostrar '(ninguno)' en lugar del nombre del periodico.  Esquema:
 (Id_Periodista, Nombre_Periodista, Nombre_Periodico) */
-SELECT per.idPeriodista as Id_Periodista, per.nombre as Nombre_Periodista, p.nombre as Nombre_Periodico
+SELECT per.idPeriodista Id_Periodista, per.nombre Nombre_Periodista, NVL(p.nombre, '(ninguno)') Nombre_Periodico
 FROM Periodista per
 LEFT JOIN Articulo a ON per.idPeriodista = a.idPeriodista
 LEFT JOIN Periodico p ON a.idPeriodico = p.idPeriodico
-GROUP BY per.idPeriodista,  per.nombre, p.nombre;
+GROUP BY per.idPeriodista, per.nombre, p.nombre;
 
 
 
@@ -175,7 +175,13 @@ han escrito articulos en ellos en 2019. Si ningún periodista ha
 escrito ningún articulo para un periodico en 2019, debe mostrar
 '(ninguno)' en lugar del nombre del periodista.  Esquema:
 (Id_Periodico, Nombre_Periodico, Id_Periodista, Nombre_Periodista) */
-NVL("(ninguno)", 0)
+SELECT p.idPeriodico Id_Periodico, p.nombre Nombre_Periodico, per.idPeriodista Id_Periodista, NVL(per.nombre, '(ninguno)') Nombre_Periodista
+FROM periodico p
+LEFT JOIN articulo a ON p.idPeriodico = a.idPeriodico
+LEFT JOIN periodista per ON a.idPeriodista = per.idPeriodista
+WHERE EXTRACT(YEAR FROM a.fechaPub) = 2019;
+
+
 
 
 /* 7. Muestra la lista de TODOS los periodistas, el número de
@@ -184,7 +190,7 @@ donde se han publicado esos articulos.  Si un periodista no ha escrito
 ningún articulo, debe mostrar 0 en esas columnas.  Esquema:
 (Id_Periodista, Nombre_Periodista, Num_Articulos, Num_Periodicos) */
 SELECT j.idPeriodista as Id_Periodista, j.nombre as Nombre_Periodista, COUNT(idArticulo) as Num_Articulos, COUNT(DISTINCT idPeriodico) as Num_periodicos
-FROM periodistas j JOIN articulo a on j.idPeriodista = a.ifPeriodista
+FROM periodistas j JOIN articulo a on j.idPeriodista = a.idPeriodista;
   
 
 
