@@ -110,6 +110,18 @@ insert into Libros_Pedido values ('5463467723747','0000009P', 7);
 
 commit;
 
+/*
+
+_________ ________    _______    _____________ ___.____  ________________    _________
+\_   ___ \\_____  \   \      \  /   _____/    |   \    | \__    ___/  _  \  /   _____/
+/    \  \/ /   |   \  /   |   \ \_____  \|    |   /    |   |    | /  /_\  \ \_____  \ 
+\     \___/    |    \/    |    \/        \    |  /|    |___|    |/    |    \/        \
+ \______  |_______  /\____|__  /_______  /______/ |_______ \____|\____|__  /_______  /
+        \/        \/         \/        \/                 \/             \/        \/ 
+
+Consultas agregadas, funciones de agregacion y sentencias GROUP BY & HAVING
+*/
+
 -- Consulta 1 que muestra los precios de venta de los libros
 SELECT ISBN, titulo, anio as año, precioVenta as precio_venta
 FROM Libro;
@@ -178,9 +190,25 @@ WHERE l.titulo IN ('Pride and Prejudice', 'The Little Prince')
 GROUP BY c.IdCliente, c.nombre
 HAVING COUNT(DISTINCT l.titulo) = 2;
 
-/* Consulta 12 que muestra los clientes y los libros para los que se ha obtenido una
-rentabilidad de al menos 50 euros en un único pedido. La
-rentabilidad es la diferencia entre el precio de venta y
-el precio de compra. Debes tener en cuenta el número de ejemplares
-vendidos. */ 
-SELECT c.nombre Nombre_cliente, l.titulo Titulo
+/* 
+  Consulta 12 que muestra los clientes y los libros para los que se ha obtenido una
+  rentabilidad de al menos 50 euros en un único pedido. La
+  rentabilidad es la diferencia entre el precio de venta y
+  el precio de compra. Debes tener en cuenta el número de ejemplares
+  vendidos. 
+*/ 
+SELECT c.IdCliente as id_cliente, c.nombre as nombre_cliente, l.titulo, (l.precioVenta - l.precioCompra) * lp.cantidad as rentabilidad
+FROM Cliente c 
+JOIN Pedido p ON c.IdCliente = p.IdCliente
+JOIN Libros_Pedido lp ON p.IdPedido = lp.idPedido
+JOIN Libro l ON lp.ISBN = l.ISBN
+WHERE (l.precioVenta - l.precioCompra) * lp.cantidad >= 50;
+
+
+-- Added so this is no problem with later exercises
+drop table Cliente cascade constraints;
+drop table Pedido cascade constraints;
+drop table Autor cascade constraints;
+drop table Autores_Libro cascade constraints;
+drop table Libro cascade constraints;
+drop table Libros_Pedido cascade constraints;
