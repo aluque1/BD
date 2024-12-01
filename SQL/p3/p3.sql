@@ -114,10 +114,16 @@ INSERT INTO articulo VALUES (116, 'Editorial: Most relevant news 2019',
 
 COMMIT;
 
--- -------------------------------------------------------------------------
--- Lab 3. CONSULTAS
--- Escribe tus respuestas a continuación de cada comentario.
--- -------------------------------------------------------------------------
+/*
+_________ ________    _______    _____________ ___.____  ________________    _________
+\_   ___ \\_____  \   \      \  /   _____/    |   \    | \__    ___/  _  \  /   _____/
+/    \  \/ /   |   \  /   |   \ \_____  \|    |   /    |   |    | /  /_\  \ \_____  \ 
+\     \___/    |    \/    |    \/        \    |  /|    |___|    |/    |    \/        \
+ \______  |_______  /\____|__  /_______  /______/ |_______ \____|\____|__  /_______  /
+        \/        \/         \/        \/                 \/             \/        \/ 
+
+Consultas agregadas, funciones de agregacion y sentencias GROUP BY & HAVING
+*/
 
 /* 1. Muestra el número de periodicos en la base de datos. */
 SELECT COUNT (*) as num_periodicos 
@@ -218,13 +224,3 @@ Nombre_Periodista, Num_Periodicos, Total_Visitas)*/
 /* 11. Contesta la pregunta anterior (10) ordenando los resultados por
 Num_Articulos en orden decreciente y, si hay varias filas con el mismo
 valor, ordena estas filas por Total_Visitas en orden creciente.*/
-
-
-
-
-
-
-
-
-
-

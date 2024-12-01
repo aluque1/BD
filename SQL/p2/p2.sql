@@ -111,15 +111,12 @@ insert into Libros_Pedido values ('5463467723747','0000009P', 7);
 commit;
 
 /*
-
 _________ ________    _______    _____________ ___.____  ________________    _________
 \_   ___ \\_____  \   \      \  /   _____/    |   \    | \__    ___/  _  \  /   _____/
 /    \  \/ /   |   \  /   |   \ \_____  \|    |   /    |   |    | /  /_\  \ \_____  \ 
 \     \___/    |    \/    |    \/        \    |  /|    |___|    |/    |    \/        \
  \______  |_______  /\____|__  /_______  /______/ |_______ \____|\____|__  /_______  /
         \/        \/         \/        \/                 \/             \/        \/ 
-
-Consultas agregadas, funciones de agregacion y sentencias GROUP BY & HAVING
 */
 
 -- Consulta 1 que muestra los precios de venta de los libros
