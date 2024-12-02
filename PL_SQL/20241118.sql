@@ -144,7 +144,7 @@ CREATE OR REPLACE PROCEDURE IMPARESENTRE(
 ) IS -- En procedimientos almacenado no tenemos DECLARE, tenemos IS
 BEGIN
   IF P_IN <= 0 OR P_IN > 100 THEN
-    DBMS_OUTPUT.PUT_LINE('[ERROR]: N debe estar entre 1 y 100');
+    DBMS_OUTPUT.PUT_LINE('[ERROR] : N debe estar entre 1 y 100');
   ELSE
     FOR I IN 1..P_IN LOOP
       IF I MOD 2 != 0 THEN
@@ -186,8 +186,86 @@ FROM
    departamento, número de proyectos en los que trabaja y número total
    de horas asignadas a proyectos. Si el empleado no existe en la base
    de datos, debe mostrar un mensaje de error. */
+CREATE OR REPLACE PROCEDURE datosEmpleado(
+  NIF_IN IN VARCHAR2
+) IS 
+v_nombre EMP.nombre%TYPE; -- Variables donde voy a almacenar los datos de las consultas
+v_dpto DPTO.nombre%TYPE;
+v_num_proyecto INTEGER;
+v_horas_total INTEGER;
+v_existe INTEGER;
+BEGIN
+  -- Comprobamos si existe el empleado
+  SELECT COUNT(*) INTO v_existe
+  FROM EMP
+  WHERE NIF = NIF_IN;
+
+  IF v_existe=0 THEN
+    DBMS_OUTPUT.PUT_LINE('[ERROR] : Empleado con NIF ' || NIF_IN || ' no existe.');
+  ELSE
+    -- consultamos el nombre del empleado dado por el NIF
+    SELECT nombre INTO v_nombre
+    FROM EMP
+    WHERE NIF = NIF_IN;
+    -- consultamos el departamento en al que esta asignado nuestro empleado
+    SELECT nombre INTO v_dpto
+    FROM DPTO d
+    JOIN EMP e ON d.CODDP = e.CODDP
+    WHERE e.NIF = NIF_IN;
+    -- consultamos el numero de proyectos al que esta asignado nuestro empleado
+    SELECT COUNT(*) INTO v_num_proyecto
+    FROM DISTRIBUCION
+    WHERE NIF = NIF_IN;
+    -- consultamos el numero de proyectos al que esta asignado nuestro empleado
+    SELECT SUM(HORAS) INTO v_horas_total
+    FROM DISTRIBUCION
+    WHERE NIF = NIF_IN;
+
+    DBMS_OUTPUT.PUT_LINE('Nombre: ' || v_nombre);
+    DBMS_OUTPUT.PUT_LINE('Departamento: ' || v_nombre);
+    DBMS_OUTPUT.PUT_LINE('Numero de proyectos: ' || v_num_proyecto);
+    DBMS_OUTPUT.PUT_LINE('Numero de horas totales: ' || v_horas_total);
+  END IF;
+END;
+/
 
 
 /* 4. Escribe un procedimiento almacenado que muestre en la consola el
    número total de horas asignadas por proyecto, así como el nombre
    del director del proyecto y el departamento al que pertenece.  */
+
+
+/* 
+  La primera opcion que se plantea es usando una subconsulta como indice del FOR. Se va iterando por cada
+  elemento de la subconsulta para construir los datos
+ */
+CREATE OR REPLACE horas_asignadas(
+) IS
+BEGIN
+  FOR resultados IN (
+    SELECT NVL(SUM(dist.horas, 0)) horas_total, e.NOMBRE nombre_dir, d.NOMBRE nombre_dpto
+    FROM PROYECTO p
+    LEFT JOIN EMP e ON p.NIFDIR = e.NIF
+    LEFT JOIN DPTO d ON e.CODDP = d.CODDP
+    LEFT JOIN DISTRIBUCION dist ON p.CODPR = dist=CODPR
+    GROUP BY e.NOMBRE, d.NOMBRE
+  ) LOOP
+    DBMS_OUTPUT.PUT_LINE("Total de horas asignadas: " || horas_total);
+    DBMS_OUTPUT.PUT_LINE("Nombre del director: " || nombre_dir);
+    DBMS_OUTPUT.PUT_LINE("Departamento del director: " || nombre_dpto);
+  END LOOP;
+END;
+/
+
+/* Otra opcion que es mas simple es usar un cursor para iterarar por los elementos de la subconsulta */
+CREATE OR REPLACE horas_asignadas IS
+CURSOR cur_proyectos IS
+
+
+BEGIN
+  -- Iteramos e imprimimos resultados
+  FOR proy IN cur_proyectos LOOP
+  
+  END LOOP;
+END;
+/
