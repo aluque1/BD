@@ -220,4 +220,189 @@ La communicacion desde las tabla de la BS y variables PL/SQL no es automatica y 
 
 #### SELECT ... INTO
 
+Se puede utilizar caundo vamos a realizar una consulta que devuelve una sola fila. Es igual que una sentencia `select` con una clausula `into` adicional.
+
+Despues de la clausula into se indican las variables locales que contendran el resultado de la ejecucion de la consulta SQL. El numero y tipo de variables debe **coincidir** con el resultado
+
+``` sql
+create or replace pr_in(pr in proyecto.cod_pr%type) IS
+        v_dir = proyecto.nif_dir%type;
+        v_desc = proyecto.descr%type;
+begin
+        select e.nombre, p.descr INTO v_dir, nif_dir
+        from proyecto p
+        join emp e on p.nif = e.dni
+        where cod_pr = pr;
+        dbms_output.put_line('Proyecto: ' || pr || ' - ' || v_desc);
+        dbms_output.put_line('Director: ' || v_dir);
+end;
+/
+```
+
 #### Cursores
+
+Como `select ... into` no se puede usar para varias filas, ya que si devuelve mas de uno o ninguna fila se produce una excepcion, para recorrer y tratar una a una las filas resultantes de una sentencia `select` que devuelve varias filas se utiliza un cursor.
+
+Un cursor es como un puntero. Se tiene que asociar a una consulta de la siguiente manera
+
+``` sql
+cursor cr_piezas is
+        select cod, descr, precio
+        from piezas
+        where precio > 100;
+```
+
+Se puede recorrer un cursor con un bucle `for` de cursor o mediante operaciones de bajo nivel. Como se suele recorrer tanto los cursores con los bucles `for` que hay uno especifico para el recorrido de cursores.
+
+``` sql
+CREATE OR REPLACE PROCEDURE mostrarEmpleados IS
+        CURSOR crEmpl IS
+                SELECT e.NIF, e.nombre, d.nombre Depto
+                FROM Emp e 
+                JOIN Dpto d ON e.CodDp = d.CodDp;
+BEGIN
+        DBMS_OUTPUT.PUT_LINE('NIF NOMBRE Departamento');
+        DBMS_OUTPUT.PUT_LINE('----------------------------------');
+        FOR rec IN crEmpl LOOP
+                DBMS_OUTPUT.PUT_LINE(rec.NIF || ' ' ||
+                RPAD(rec.nombre,20) || ' ' ||
+                RPAD(rec.Depto,20));
+        END LOOP;
+END;
+```
+
+## Disparadores(triggers)
+
+Hay veces que se necesita ejecutar un determinado codigo cuando ocurre un evento en la BDD, un ejemplo de esto es cuando se debe incluir una restriccion de integridad que no se puede incluir en el modelo relacional, o registro de quien ah modificado que tablas/datos.
+
+Hay 3 tipos de eventos a los que se pueden asociar los disparadores:
+
+- Disparadores de tabla: cuando se produce una modificacion del los datos de una tabla
+- Disparadores de vista: cuando se produce una modificacion sobre los datos de una vista
+- Disparadores de sistema: cuando ocurre un evento del sistema (conexion de un usuario, borrado de un objeto...)
+
+El primer tipo es el que vamoa a ver en mas profundidad son los disparadores de tabla
+
+### Disparadores de tabla
+
+Antes de empezar es necesario fijar una serie de conceptos para definir un disparador.
+
+**La tabla** cuya modificacion va a activar la ejecucion del disparador
+
+**Evento(s)** que dispara el disparador: `insert`, `update`, `delete`
+
+**Cuando se ejecuta el codigo del disparador**: justo antes o justo despues de que se produzca el evento.
+
+- `before`: los datos de la tabla todavia no se han actualizado todavia y pueden ser modificados por el disparador antes de ser almacenado(cambiando el reg `:NEW`)
+- `after`: despues de almacenar los datos de la tabla, el disparador no puede modificarlos
+
+**Cuantas veces se ejecuta el disparador**
+
+- Disparador de instruccion: se ejecuta una vez por cada instruccion DML que lo dispara (esta es la opcion por defecto).
+- Disparador de fila: se ejecuta una vez por cada fila que se ve afectada y se indica con `FOR EACH ROW`
+
+Con lo anterior un esquema de un disparador es el siguiente:
+
+``` sql
+create [or replace] trigger nombre_disp
+before|after evento [or evento[or evento]]
+on tabla -- Indica la tabla que cuando se modifican datos en ell provoca la ejecucion del disparador
+[for each row [when cond]] -- disparador de fila
+[declare
+        declaraciones_del_disparador]
+begin
+        cuerpo_del_disparador
+end;
+```
+
+Un ejemplo de como se haria un disparador de instruccion seria el siguiente
+
+``` sql
+-- -----------------------------------------------------
+-- Ejemplo12: Disparador de instruccion.
+-- -----------------------------------------------------
+CREATE OR REPLACE TRIGGER disparadorDeInstruccion
+AFTER UPDATE OR INSERT OR DELETE
+ON distribucion
+BEGIN
+  DBMS_OUTPUT.PUT_LINE('!! Se ha ejecutado una sentencia de modificacion de Allocation.');
+END;
+/
+
+insert into distribucion values ('PR2','85647456W',25);
+select * from distribucion;
+update distribucion set horas = horas + 4;
+delete from distribucion where horas > 100; -- the trigger fires even if no row is changed. 
+```
+
+El codigo de arriba se ejecuta una vez **por cada instr DML** que lo dispara
+
+Por lo contrario un disparador de fila se ejecuta una vez **por cada fila afectada en una instr DML** lo cual consume muchos recursos porque se puede ejecutar millones de veces para una sola instr DML por lo tanto:
+
+- Se debe evitar ejecutarlo sin necesidad
+- Si el evento es `update` se puede indicar la columna afectada por el disparador con `update of columna` y asi solo se ejecuta cuando se modifica la columna
+- Usar la clausula `when` en la clausula `for each row [when cond]` para precidar con mas detalle cuando se ejecuta el disparador
+
+Un ejemplo de un disparador de fila es el siguiente
+
+``` sql
+CREATE OR REPLACE TRIGGER pruebaTriggerFila
+AFTER UPDATE OR INSERT OR DELETE ON Emp FOR EACH ROW
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Modificando una fila de la tabla Emp');
+    DBMS_OUTPUT.PUT_LINE('   Old value: ' || :OLD.NIF || ' - ' || :OLD.nombre || ' - ' || :OLD.CodDp);
+    DBMS_OUTPUT.PUT_LINE('   New value: ' || :NEW.NIF || ' - ' || :NEW.nombre || ' - ' || :NEW.CodDp);
+END;
+/
+
+update Emp set nombre = nombre || '--' where NIF like '3%';
+insert into Emp values ('1234Z','John Doe',null);
+delete from Emp where emplId = '1234Z';
+commit;
+```
+
+### Elementos especificos para programar disparadores
+
+#### Predicados
+
+Si un disparador se ejecuta por varios eventos podemos utilizar los siguientes predicados para identificar el evento que produjo su ejecucion:
+
+- `inserting`
+- `updating`
+- `deleting`
+
+Por ejemplo dentro del disparador podriamos tener lo siguente
+
+``` sql
+if inserting then ...
+if updatin then ...
+if deleting then ...
+end if;
+```
+
+#### Registros con los datos
+
+En el codigo de un disparador de fila se puede acceder a los datos de la fila cuya modificacion produjo la ejecucion del disparador. En el ejemplo mostrado mas arriba se lo que se usa para ver los valores antiguos y los nuevos.
+
+- `:OLD`: contiene los valores de las columnas de la fila antes de ejecutar la instruccion de modificacion que provoco la exe del disparador
+- `:NEW`: contiene los valores de las columnas de la fila despues de ejecutar la instruccion de modificacion que provoco la exe del disparador. Si el disparador es de tipo `BEFORE` se pueden cambiar los valores de `:NEW`
+
+#### Orden de ejecucion de disparadores
+
+Dado que se pueden crear varios disparadores asociados a una misma tabla tiene que haber un orden determinado para saber que se ejecuta antes:
+
+1. Disparadores `BEFORE` de instruccion
+2. Por cada fila : disparadores `BEFORE` de fila
+3. Se modific la fila
+4. Por cada fila : disparadores `AFTER` de fila
+5. Disparadores `AFTER` de instruccion
+
+
+#### Otras operaciones sobre triggers
+
+``` sql
+DROP TRIGGER nombreDisparador; -- elimina disparador
+ALTER TRIGGER nombreDisparador DISABLE; -- desactiva disparador
+ALTER TRIGGER nombreDisparador ENABLE; -- reactiva disparador
+ALTER TABLE tabla {DISABLE|ENABLE} ALL TRIGGERS; -- desactiva/reactiva todos los disparadores asociados a una tabla
+```
