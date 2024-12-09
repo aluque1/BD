@@ -239,7 +239,7 @@ END;
   La primera opcion que se plantea es usando una subconsulta como indice del FOR. Se va iterando por cada
   elemento de la subconsulta para construir los datos
  */
-CREATE OR REPLACE horas_asignadas(
+CREATE OR REPLACE procedure horas_asignadas(
 ) IS
 BEGIN
   FOR resultados IN (
@@ -258,14 +258,27 @@ END;
 /
 
 /* Otra opcion que es mas simple es usar un cursor para iterarar por los elementos de la subconsulta */
-CREATE OR REPLACE horas_asignadas IS
+CREATE OR REPLACE procedure horas_asignadas IS
 CURSOR cur_proyectos IS
-
+SELECT NVL(SUM(dist.horas), 0) horas_total, e.NOMBRE nombre_dir, d.NOMBRE nombre_dpto
+FROM PROYECTO p
+LEFT JOIN EMP e ON p.NIFDIR = e.NIF
+LEFT JOIN DPTO d ON e.CODDP = d.CODDP
+LEFT JOIN DISTRIBUCION dist ON p.CODPR = dist.CODPR
+GROUP BY e.NOMBRE, d.NOMBRE;
 
 BEGIN
-  -- Iteramos e imprimimos resultados
-  FOR proy IN cur_proyectos LOOP
-  
-  END LOOP;
+FOR rec IN cur_proyectos LOOP
+  DBMS_OUTPUT.PUT_LINE('Total de horas asignadas: ' || rec.horas_total);
+  DBMS_OUTPUT.PUT_LINE('Nombre del director: ' || rec.nombre_dir);
+  DBMS_OUTPUT.PUT_LINE('Departamento del director: ' || rec.nombre_dpto);
+END LOOP;
 END;
 /
+
+
+-- Added so there is no problem with future exercises
+-- DROP TABLE DISTRIBUCION;
+-- DROP TABLE PROYECTO;
+-- DROP TABLE EMP;
+-- DROP TABLE DPTO;

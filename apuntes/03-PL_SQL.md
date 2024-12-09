@@ -397,7 +397,6 @@ Dado que se pueden crear varios disparadores asociados a una misma tabla tiene q
 4. Por cada fila : disparadores `AFTER` de fila
 5. Disparadores `AFTER` de instruccion
 
-
 #### Otras operaciones sobre triggers
 
 ``` sql
