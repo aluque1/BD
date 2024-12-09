@@ -66,3 +66,25 @@ Proyecto: PR2 - Personal                      25    1
 Proyecto: PR3 - Logistica                     70    2
 -----------------------------------------------------
 */
+create or replace procedure listar_proy_por_dptos is
+   cursor cursor_dptos is
+   select coddp, nombre
+   from dpto;
+   
+   cursor cursor_proyectos is
+   select p.codpr, p.descr, sum(dist.horas) total_horas, count(*) num_empleados
+   from proyecto p
+   join distribucion d on p.codpr = d.codpr
+   join emp e p.nifdir = e.nif
+   group by p.codpr, p.descr;
+begin
+   for rec1 in cursor_dptos loop
+      DBMS_OUTPUT.PUT_LINE('Departamento: ' || rec1.coddp || ' ' || rec1.nombre);
+      DBMS_OUTPUT.PUT_LINE('------------------------------------------------------');
+      for rec2 in cursor_proyectos loop
+         dbms_output.put_line('Proyecto: ' || rec2.codpr || ' - ' || rpad(rec2.descr, 25) || rec2.num_empleados);
+      end loop;
+      dbms_output.putline('------------------------------------------------------');
+   end loop;
+end;
+/

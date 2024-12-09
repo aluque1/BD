@@ -156,6 +156,22 @@ Flight number not found!
 Comprueba que el procedimiento escrito funciona bien con varios casos
 de prueba.
 */
+create or replace procedure PrintFlightInfo(p_num_vuelo in FWFlight.flno%type) is
+	v_flight_number FWFlight.flno%type;
+	v_dept_airport FWFlight.deptAirport%type;
+	v_dest_airport FWFlight.destAirport%type;
+	v_distance FWFlight.distance%type;
+begin
+	select flno, deptAirport, destAirport, distance into v_flight_number, v_dept_airport, v_dest_airport, v_distance
+	from FWFlight
+	where flno = p_num_vuelo;
+	dbms_output.put_line('----------------------------------------------------------');
+	dbms_output.put_line('Flight information: ' || v_flight_number || '-'|| v_dept_airport || '-' || v_dest_airport || '(' || v_distance || ' millas)');
+	dbms_output.put_line('----------------------------------------------------------');
+exception
+   when NO_DATA_FOUND then dbms_output.put_line('Flight number not found.');
+end;
+/
 
 
 
