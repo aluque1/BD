@@ -1,22 +1,22 @@
-# Modelo Entidad Relacion
+# Modelo Entidad Relación
 
-Es un modelo que nos permite representar la informacion a nivel conceptual.
+Es un modelo que nos permite representar la información a nivel conceptual.
 
 ## Elementos fundamentales
 
-Hay 3 elementos fundamentales en el Modelo Entidad Relacion. Son los siguientes:
+Hay 3 elementos fundamentales en el Modelo Entidad Relación. Son los siguientes:
 
 - Entidades
 - Atributos
 - Relaciones
 
-En un modelo que se representa mediante diagramas Entirad-Relacion
+En un modelo que se representa mediante diagramas Entidad-Relación
 
 ### Entidades
 
-Las entidades son los elementos basicos del modelo ER y representan una "cosa" del mundo real. Por ejemplo, una persona es una entidad.
+Las entidades son los elementos básicos del modelo ER y representan una "cosa" del mundo real. Por ejemplo, una persona es una entidad.
 
-Existen entidades debiles, son entidades que no tienen clave primaria en sus atributos. Esto se vera mas adelante.
+Existen entidades débiles, son entidades que no tienen clave primaria en sus atributos. Esto se verá más adelante.
 
 En el diagrama se representan de la siguiente manera:
 
@@ -24,7 +24,7 @@ En el diagrama se representan de la siguiente manera:
 
 ### Atributos
 
-Los atributos son los componentes mas pequeños del modelo ER. Si tomamos el ejemplo de arriba una persona es la entidad y los conjuntos de datos como nombre, dni, fecha de nacimiento, ... son los atributos.
+Los atributos son los componentes más pequeños del modelo ER. Si tomamos el ejemplo de arriba una persona es la entidad y los conjuntos de datos como nombre, dni, fecha de nacimiento, ... son los atributos.
 
 Hay varios tipos de atributos:
 
@@ -32,7 +32,7 @@ Hay varios tipos de atributos:
 - Derivados
 - Compuestos
 
-Se representan de la siguiente manera en un diagrama del Modelo Entidad Relacion:
+Se representan de la siguiente manera en un diagrama del Modelo Entidad Relación:
 
 ![Diagrama con los distintos tipos de atributos](imagenes/attribute_types.png)
 
@@ -42,71 +42,68 @@ La clave primaria es importante para el modelo ya que sirve para distinguir una 
 
 ![Diagrama que muestra clave primaria](imagenes/primary_key.png)
 
-Una entidad puede no tener un ningun conjunto de atributos que sea clave.
+Una entidad puede no tener ningún conjunto de atributos que sea clave.
 
-### Relacion
+### Relación
 
-Se usan cuando existe una relacion entre varias entidades. Siguiendo con el ejemplo de antes, una persona puede estudiar en una facultad, de manera que estas 2 entidades estarian relacionadas entre ellas.
+Se usan cuando existe una relación entre varias entidades. Siguiendo con el ejemplo de antes, una persona puede estudiar en una facultad, de manera que estas 2 entidades estarían relacionadas entre ellas.
 
-![Diagrama relacion simple](imagenes/simple_relation.png)
+![Diagrama relación simple](imagenes/simple_relation.png)
 
-Una relacion puede tener atributos pero solo se deben añadir cuando no se puede añadir a ninguna de las 2 entidades.
+Una relación puede tener atributos pero solo se deben añadir cuando no se puede añadir a ninguna de las 2 entidades.
 
-Las relaciones se pueden establecer entre 2 o mas entidades.
+Las relaciones se pueden establecer entre 2 o más entidades.
 
-![Diagrama relacion ternaria](imagenes/triple_relation.png)
+También se pueden establecer relaciones recursivas. Pongamos como ejemplo que un empleado es el jefe de otro, podemos hacer que una relación se apunte a sí misma.
 
-
-Tambien se pueden establecer relaciones recursivas. Pongamos como ejemplo que un estudiante es el mentor de otro, podemos hacer que una relacion se apunte a si misma.
-
-![Diagrama relacion recursiva de mentores](imagenes/recursive_relation.png)
+![Diagrama relación recursiva de jefe](imagenes/recursive_relation.png)
 
 #### Restricciones
 
-Las restricciones se utilizan para limitar el numero de veces que las entidades pueden/deben participar en el conjunto de relaciones. Existen 2 tipos de restricciones
+Las restricciones se utilizan para limitar el número de veces que las entidades pueden/deben participar en el conjunto de relaciones. Existen 2 tipos de restricciones
 
 ##### Cardinalidad
 
-Especifica el numero **maximo** de relaciones en las que una entidad puede aparecer en el conjunto de relaciones. Las razones de cardinalidad posibles en relaciones binarias entre unidades A y B (A:B) son las siguientes:
+Especifica el número **máximo** de relaciones en las que una entidad puede aparecer en el conjunto de relaciones. Las razones de cardinalidad posibles en relaciones binarias entre unidades A y B (A:B) son las siguientes:
 
 - 1:1
-![diagrama Relacion 1 a 1](imagenes/relation_11.png)
+![diagrama Relación 1 a 1](imagenes/relation_11.png)
 
 - 1:N
-![diagrama Relacion 1 a N](imagenes/relation_1N.png)
+![diagrama Relación 1 a N](imagenes/relation_1N.png)
 
 - N:N
-![diagrama Relacion N a N](imagenes/relation_NN.png)
+![diagrama Relación N a N](imagenes/relation_NN.png)
 
-##### Participacion
+##### Participación
 
-Indica si cada elemento de un tipo de entidad debe participar obligatoriamente en la relacion o no.
+Indica si cada elemento de un tipo de entidad debe participar obligatoriamente en la relación o no. Por ejemplo si tenemos una base de datos de pedidos realizados por clientes podemos poner la restricción de participación de que todo pedido tiene que estar asociado a un cliente.
 
-![Diagrama participacion total o no](imagenes/participation.png)
+![Diagrama participación total o no](imagenes/participation.png)
 
-### Entidades debiles
+### Entidades débiles
 
-Son las entidades que hemos mencionado anteriormente. En sus atributos no contienen una clave primaria. Por ejemplo tenemos una cadena de hoteles y de cada hotel es una entidad de la que se guarda su ID, ubicacion y nombre. En la base de datos tambien tenemos la entidad de la habitacion con el atributo de numero de habitacion.
+Son las entidades que hemos mencionado anteriormente. En sus atributos no contienen una clave primaria. Por ejemplo tenemos una cadena de hoteles y de cada hotel es una entidad de la que se guarda su ID. En la base de datos también tenemos la entidad de la habitación con el atributo de número de habitación.
 
-No se puede identificar la habitacion solo por su numero ya que puede haber varios hoteles que tengan una habitacion 101.
+No se puede identificar la habitación solo por su número ya que puede haber varios hoteles que tengan una habitación 101.
 
-Entonces, para poder identificar una habitacion tenemos que usar el numero de habitacion **y** el id del hotel al que pertenece la habitacion.
+Entonces, para poder identificar una habitación tenemos que usar el número de habitación **y** el id del hotel al que pertenece la habitación.
 
-![Diagrama entidad debil](imagenes/weak_entity.png)
+![Diagrama entidad débil](imagenes/weak_entity.png)
 
 ## Modelo extendido
 
-### Especializacion y generalizacion
+### Especialización y generalización
 
-Es parecido a la herencia que se observa en la OOP. La especializacion parte de un conjunto de entidades inicial (Se empieza con el padre y vamos sacando los hijos), minetras generalizacion es la metodologia inversa.
+Es parecido a la herencia que se observa en la OOP. La especialización parte de un conjunto de entidades inicial (Se empieza con el padre y vamos sacando los hijos), mientras generalización es la metodología inversa.
 
 ![Diagrama ISA](imagenes/isa.png)
 
 ### Agregaciones
 
-El model ER solo permite establecer relaciones entre entidades, no se puede conectar direcamente una relacion con otra relacion.
+El modelo ER solo permite establecer relaciones entre entidades, no se puede conectar directamente una relación con otra relación.
 
-Esto hace que en caso tengamos que tratar una relacion como una entidad de un nivel mas alto.
+Esto hace que en caso tengamos que tratar una relación como una entidad de un nivel más alto.
 
 Pongamos como ejemplo lo siguiente(**clave primaria**):
 
@@ -114,10 +111,10 @@ Tenemos las siguientes entidades
 
 Profesor con los atributos **id_profesor**, Nombre y Departamento
 
-Proyecto con los attr **id_proyecto** y titulo
+Proyecto con los attr **id_proyecto** y título
 
-Organizacion con los attr **id_org** y nombre
+Organización con los attr **id_org** y nombre
 
-Tiene que haber al menos un profesor que guie un proyecto. Despues tenemos a una organizacion externa que patrocina tanto al proyecto como al profesor, pero a ninguno por separado.
+Tiene que haber al menos un profesor que guíe un proyecto. Después tenemos a una organización externa que patrocina tanto al proyecto como al profesor, pero a ninguno por separado.
 
-![Diagrama agregacion](imagenes/agregation.png)
+![Diagrama agregación](imagenes/agregation.png)
